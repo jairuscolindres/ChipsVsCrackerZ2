@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ lab.title }} — ChipsvsCrackerZ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/lab/workspace.css' %}">
+</head>
+<body>
+
+    <!-- Pass lab data to JS -->
+    <script>
+        const LAB_DATA = {
+            wokwiProjectId: "{{ lab.wokwi_project_id }}",
+            flag: "{{ lab.flag }}",
+            points: {{ lab.points }},
+        };
+    </script>
+
+    <!-- ── TOP NAV BAR ── -->
+    <nav class="topbar">
+        <div class="topbar__brand">
+            <span class="topbar__logo">⬡</span>
+            <span class="topbar__title">ChipsvsCrackerZ</span>
+        </div>
+        <div class="topbar__links">
+            <a href="#" class="topbar__link">Dashboard</a>
+            <a href="#" class="topbar__link topbar__link--active">Labs</a>
+            <a href="#" class="topbar__link">Leaderboard</a>
+        </div>
+        <div class="topbar__user">
+            <span class="led led--green"></span>
+            <span class="topbar__username">dev@crackerz</span>
+        </div>
+    </nav>
+
+    <!-- ── MAIN SPLIT WORKSPACE ── -->
+    <main class="workspace">
+
+        <!-- ===== LEFT PANEL: INTERACTIVE WORKBENCH ===== -->
+        <section class="panel panel--left">
+
+            <!-- Wokwi Canvas -->
+            <div class="panel__section panel__section--wokwi">
+                <div class="panel__header">
+                    <span class="led led--cyan"></span>
+                    <h2 class="panel__title">Virtual Hardware Canvas</h2>
+                    <div class="panel__controls">
+                        <button class="btn btn--sm btn--outline" id="btn-start" title="Start Simulation">
+                            ▶ Start
+                        </button>
+                        <button class="btn btn--sm btn--danger" id="btn-stop" title="Stop Simulation" disabled>
+                            ■ Stop
+                        </button>
+                    </div>
+                </div>
+                <div class="wokwi-canvas" id="wokwi-canvas">
+                    <div class="wokwi-placeholder" id="wokwi-placeholder">
+                        <div class="wokwi-placeholder__icon">⬡</div>
+                        <p>Wokwi Simulation Canvas</p>
+                        <p class="wokwi-placeholder__sub">Click <strong>▶ Start</strong> to initialize the virtual hardware</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Serial Monitor -->
+            <div class="panel__section panel__section--editor">
+                <div class="panel__header">
+                    <span class="led led--gold"></span>
+                    <h2 class="panel__title">Serial Monitor</h2>
+                    <span class="badge badge--mono">{{ lab.datasheet.baud }} baud</span>
+                </div>
+                <div class="serial-monitor" id="serial-monitor">
+                    <pre class="serial-monitor__output" id="serial-output"><span class="serial-prompt">&gt;</span> Serial initialized... {{ lab.datasheet.baud }} baud
+<span class="serial-prompt">&gt;</span> Waiting for simulation...
+<span class="serial-cursor">▋</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== RESIZE HANDLE ===== -->
+        <div class="resize-handle" id="resize-handle"></div>
+
+        <!-- ===== RIGHT PANEL: CHALLENGE CONTROL ===== -->
+        <section class="panel panel--right">
+
+            <!-- Lab Title Card -->
+            <div class="lab-card">
+                <div class="lab-card__header">
+                    <span class="led led--{{ lab.difficulty_color }}"></span>
+                    <h1 class="lab-card__title">{{ lab.title }}</h1>
+                    <span class="badge badge--gold">{{ lab.points }} PTS</span>
+                </div>
+                <div class="lab-card__meta">
+                    <span class="badge badge--difficulty badge--{{ lab.difficulty_color }}">{{ lab.difficulty }}</span>
+                </div>
+                <div class="lab-card__tags">
+                    {% for tag in lab.arch_tags %}
+                    <span class="chip-tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tabs: Brief / Datasheet / Hints -->
+            <div class="tab-bar">
+                <button class="tab tab--active" data-tab="brief">Brief</button>
+                <button class="tab" data-tab="datasheet">Datasheet</button>
+                <button class="tab" data-tab="hints">Hints</button>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane tab-pane--active" id="tab-brief">
+                    <p class="challenge-text">{{ lab.brief|linebreaksbr }}</p>
+                </div>
+                <div class="tab-pane" id="tab-datasheet">
+                    <div class="datasheet">
+                        <h3>Pinout Reference</h3>
+                        <table class="datasheet__table">
+                            <tr><th>Pin</th><th>Function</th><th>Direction</th></tr>
+                            {% for pin, func, dir in lab.datasheet.pins %}
+                            <tr><td>{{ pin }}</td><td>{{ func }}</td><td>{{ dir }}</td></tr>
+                            {% endfor %}
+                        </table>
+                        <h3>Communication</h3>
+                        <table class="datasheet__table">
+                            <tr><th>Parameter</th><th>Value</th></tr>
+                            <tr><td>Protocol</td><td>UART (Serial)</td></tr>
+                            <tr><td>Baud Rate</td><td>{{ lab.datasheet.baud }}</td></tr>
+                            <tr><td>Data Bits</td><td>8</td></tr>
+                            <tr><td>Parity</td><td>None</td></tr>
+                            <tr><td>Stop Bits</td><td>1</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-hints">
+                    <div class="hints-list">
+                        {% for hint in lab.hints %}
+                        <div class="hint-box hint-box--locked" data-hint-index="{{ forloop.counter0 }}">
+                            <div class="hint-box__header">
+                                <span class="led led--warning"></span>
+                                <span>Hint {{ forloop.counter }} of {{ lab.hints|length }}</span>
+                                <button class="btn btn--sm btn--outline hint-reveal-btn">Reveal</button>
+                            </div>
+                            <p class="hint-box__text" style="display:none;">{{ hint }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flag Submission Panel -->
+            <div class="flag-panel">
+                <h3 class="flag-panel__title">
+                    <span class="led led--cyan"></span>
+                    Payload Injection
+                </h3>
+                <form class="flag-form" id="flag-form">
+                    {% csrf_token %}
+                    <div class="flag-input-wrapper">
+                        <span class="flag-prefix">FLAG{</span>
+                        <input type="text"
+                               class="flag-input"
+                               id="flag-input"
+                               placeholder="enter_payload_here"
+                               autocomplete="off"
+                               spellcheck="false">
+                        <span class="flag-suffix">}</span>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full" id="btn-submit">
+                        ⚡ INJECT PAYLOAD
+                    </button>
+                </form>
+                <div class="flag-result" id="flag-result"></div>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="{% static 'js/lab/workspace.js' %}"></script>
+</body>
+</html>
