@@ -3,6 +3,6 @@ from .views import login_view
 
 app_name = "login"
 
-url_patterns = [
+urlpatterns = [
         path("", login_view, name="login"),
         ]
