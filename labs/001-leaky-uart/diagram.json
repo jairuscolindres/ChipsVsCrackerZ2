@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "author": "ChipsvsCrackerZ",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led-red",
+      "top": -80,
+      "left": 140,
+      "attrs": { "color": "red", "label": "LOCKED" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led-green",
+      "top": -80,
+      "left": 200,
+      "attrs": { "color": "green", "label": "UNLOCKED" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -30,
+      "left": 150,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": -30,
+      "left": 210,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    ["esp:4", "r1:1", "red", ["v-20", "h40"]],
+    ["r1:2", "led-red:A", "red", ["v0"]],
+    ["led-red:C", "esp:GND.1", "black", ["v20", "h-60"]],
+
+    ["esp:5", "r2:1", "green", ["v-20", "h100"]],
+    ["r2:2", "led-green:A", "green", ["v0"]],
+    ["led-green:C", "esp:GND.1", "black", ["v30", "h-120"]]
+  ],
+  "serialMonitor": {
+    "display": "always"
+  }
+}
