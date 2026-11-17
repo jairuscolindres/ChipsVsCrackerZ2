@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.user.username }} — Operator Profile // ChipsvsCrackerZ</title>
+    <link rel="stylesheet" href="{% static 'css/labs/lab_interface.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile/profile.css' %}">
+</head>
+<body>
+
+    <!-- Top Platform Navigation Bar -->
+    <header class="platform-navbar">
+        <div class="brand-section">
+            <a href="{% url 'home:home' %}" class="brand-logo">
+                <span class="brand-logo-chip">⚡ IC</span>
+                <span class="brand-logo-text">CHIPS<span>VS</span>CRACKERZ</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'home:home' %}">Dashboard</a></li>
+                <li><a href="{% url 'labs:lab_list' %}">Labs</a></li>
+                <li><a href="{% url 'profile:profile' %}" class="active">Profile</a></li>
+                <li><a href="{% url 'settings:settings' %}">Settings</a></li>
+            </ul>
+        </div>
+
+        <div class="user-profile-dock">
+            <button type="button" id="sfx-toggle-btn" class="sfx-toggle-btn active" title="Toggle mechanical audio cues">
+                <span>🔊</span> SFX: ON
+            </button>
+            <a href="{% url 'profile:profile' %}" class="user-badge">
+                <div class="user-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                <span>{{ request.user.username }}</span>
+                <span class="points-pill">★ {{ total_user_points }} PTS</span>
+            </a>
+            <form action="{% url 'home:logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">LOGOUT</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Sub-Header / Telemetry Strip -->
+    <section class="workbench-header">
+        <div class="workbench-title-group">
+            <span class="breadcrumb-tag">TELEMETRY // OPERATOR IDENTITY</span>
+            <h1 class="lab-title">CALLSIGN: {{ profile.user.username|upper }}</h1>
+            <span class="tag-badge points">★ {{ total_user_points }} PTS</span>
+            <span class="tag-badge solved"><span class="led-diode led-success"></span> {{ solved_count }} TARGETS PWNED</span>
+        </div>
+
+        <div class="workbench-telemetry-strip">
+            <div class="telemetry-item">
+                <span class="led-diode led-success led-pulse"></span>
+                <span>STATE: <span class="telemetry-val cyan">ACTIVE OPERATOR</span></span>
+            </div>
+            <div class="telemetry-item">
+                <span>ROLE: <span class="telemetry-val">{{ profile.get_role_display|upper }}</span></span>
+            </div>
+            <div class="telemetry-item">
+                <span>SILICON ID: <span class="telemetry-val">0x{{ profile.id|stringformat:"04X" }}</span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Profile Container -->
+    <main class="profile-container">
+        
+        <!-- Left: Operator Identity Card -->
+        <article class="ic-card">
+            <div class="ic-header">
+                <div class="ic-label">
+                    <span class="ic-ref">U0: OPERATOR-ID</span>
+                    <span>SILICON IDENTITY PACKAGE</span>
+                    <span class="led-diode led-success"></span>
+                </div>
+                <div class="ic-tools">
+                    <span class="breadcrumb-tag">ENLISTED {{ profile.created_at|date:"Y-m-d" }}</span>
+                </div>
+            </div>
+
+            <div class="operator-identity-body">
+                <div class="avatar-chip-frame">
+                    {% if profile.profile_image %}
+                        <img src="{{ profile.profile_image.url }}" alt="Operator Avatar">
+                    {% else %}
+                        <div class="avatar-placeholder">{{ profile.user.username|slice:":1"|upper }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="operator-title-group">
+                    <div class="operator-callsign">{{ profile.full_name|default:profile.user.username }}</div>
+                    <div class="operator-fullname">@{{ profile.user.username }}</div>
+                    <div style="margin-top: 4px;">
+                        <span class="operator-role-badge">⚡ {{ profile.get_role_display|upper }}</span>
+                    </div>
+                </div>
+
+                <div class="operator-bio">
+                    {{ profile.bio|default:"No operator biography flashed to EEPROM sector. Edit profile configuration on the right." }}
+                </div>
+
+                <div class="operator-stats-grid">
+                    <div class="op-stat-box">
+                        <span class="op-stat-lbl">TOTAL SCORE</span>
+                        <span class="op-stat-val gold">{{ total_user_points }} PTS</span>
+                    </div>
+                    <div class="op-stat-box">
+                        <span class="op-stat-lbl">PWNED TARGETS</span>
+                        <span class="op-stat-val">{{ solved_count }}</span>
+                    </div>
+                    <div class="op-stat-box">
+                        <span class="op-stat-lbl">RANK STATUS</span>
+                        <span class="op-stat-val">ACTIVE</span>
+                    </div>
+                </div>
+
+                <!-- Solved Targets List -->
+                <div class="solved-targets-section">
+                    <div class="solved-targets-title">PWNED SILICON TARGETS ({{ solved_count }})</div>
+                    {% for solve in user_solves %}
+                        <div class="solved-target-item">
+                            <a href="{% url 'labs:lab_interface' slug=solve.lab.slug %}">
+                                <span class="led-diode led-success" style="margin-right: 6px;"></span>
+                                {{ solve.lab.title }}
+                            </a>
+                            <span class="tag-badge points">+{{ solve.points_awarded }} PTS</span>
+                        </div>
+                    {% empty %}
+                        <div style="font-size: 12px; color: #8B949E; font-family: var(--font-mono); text-align: center; padding: 12px;">
+                            No hardware challenges solved yet.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+
+        <!-- Right: Operator Configuration Form -->
+        <article class="ic-card">
+            <div class="ic-header">
+                <div class="ic-label">
+                    <span class="ic-ref">U0: CRED-EEPROM</span>
+                    <span>EDIT OPERATOR CREDENTIALS</span>
+                    <span class="led-diode led-cyan"></span>
+                </div>
+                <div class="ic-tools">
+                    <span class="breadcrumb-tag">SECTOR R/W</span>
+                </div>
+            </div>
+
+            <div class="profile-form-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="terminal-alert success">
+                            <span class="led-diode led-success"></span>
+                            <span>[TELEMETRY] {{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" class="profile-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label class="field-label" for="id_full_name">Operator Full Name</label>
+                        <div class="terminal-input-wrap">
+                            <span class="terminal-prompt-prefix">name@crackerz:~$</span>
+                            <input type="text" id="id_full_name" name="full_name" value="{{ profile.full_name }}" placeholder="Callsign or full name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label" for="id_website_url">Telemetry Link / Website URL</label>
+                        <div class="terminal-input-wrap">
+                            <span class="terminal-prompt-prefix">url@crackerz:~$</span>
+                            <input type="url" id="id_website_url" name="website_url" value="{{ profile.website_url|default:'' }}" placeholder="https://github.com/operator">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label" for="id_bio">Operator Dossier / Biography</label>
+                        <div class="terminal-input-wrap">
+                            <span class="terminal-prompt-prefix">bio@crackerz:~$</span>
+                            <textarea id="id_bio" name="bio" rows="4" placeholder="Hardware security research background, favorite silicon, etc.">{{ profile.bio }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label" for="id_profile_image">Silicon Avatar Icon</label>
+                        <div class="terminal-input-wrap">
+                            <span class="terminal-prompt-prefix">chip@crackerz:~$</span>
+                            <input type="file" id="id_profile_image" name="profile_image" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <span>FLASH TO SILICON</span>
+                            <span>➔</span>
+                        </button>
+                        <a href="{% url 'home:home' %}" class="btn-secondary">BACK TO DASHBOARD</a>
+                    </div>
+                </form>
+            </div>
+        </article>
+
+    </main>
+
+    <script src="{% static 'js/home/home.js' %}"></script>
+</body>
+</html>

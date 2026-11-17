@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labs Library — ChipsvsCrackerZ</title>
+    <link rel="stylesheet" href="{% static 'css/labs/lab_interface.css' %}">
+    <link rel="stylesheet" href="{% static 'css/labs/lab_list.css' %}">
+</head>
+<body>
+
+    <!-- Top Platform Navigation Bar -->
+    <header class="platform-navbar">
+        <div class="brand-section">
+            <a href="{% url 'home:home' %}" class="brand-logo">
+                <span class="brand-logo-chip">⚡ IC</span>
+                <span class="brand-logo-text">CHIPS<span>VS</span>CRACKERZ</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'home:home' %}">Dashboard</a></li>
+                <li><a href="{% url 'labs:lab_list' %}" class="active">Labs</a></li>
+                <li><a href="{% url 'profile:profile' %}">Profile</a></li>
+                <li><a href="{% url 'settings:settings' %}">Settings</a></li>
+            </ul>
+        </div>
+
+        <div class="user-profile-dock">
+            <button type="button" id="sfx-toggle-btn" class="sfx-toggle-btn active" title="Toggle mechanical audio cues">
+                <span>🔊</span> SFX: ON
+            </button>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'profile:profile' %}" class="user-badge">
+                    <div class="user-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                    <span>{{ request.user.username }}</span>
+                    <span class="points-pill">★ {{ total_user_points }} PTS</span>
+                </a>
+                <form action="{% url 'home:logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">LOGOUT</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login:login' %}" class="btn-secondary">Login</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="labs-inventory-header">
+        <div class="inventory-title-group">
+            <h1 class="inventory-title">COMPONENT INVENTORY // LABS LIBRARY</h1>
+            <p class="inventory-subtitle">Mount hardware challenges to the virtual workbench. Reverse-engineer firmware and extract payloads.</p>
+        </div>
+
+        <div class="inventory-toolbar">
+            <form method="get" class="search-form">
+                <span class="search-prompt">&gt;</span>
+                <input type="text" name="q" value="{{ query }}" placeholder="Search labs (e.g. arch:esp32, tag:uart)..." class="search-input">
+                {% if selected_difficulty %}<input type="hidden" name="difficulty" value="{{ selected_difficulty }}">{% endif %}
+                {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+            </form>
+
+            <div class="inventory-filters">
+                <div class="filter-group">
+                    <span class="filter-label">DIFFICULTY:</span>
+                    <a href="?q={{ query }}{% if selected_status %}&status={{ selected_status }}{% endif %}" class="filter-chip {% if not selected_difficulty %}active{% endif %}">ALL</a>
+                    <a href="?q={{ query }}&difficulty=Easy{% if selected_status %}&status={{ selected_status }}{% endif %}" class="filter-chip {% if selected_difficulty == 'Easy' %}active{% endif %}">EASY</a>
+                    <a href="?q={{ query }}&difficulty=Medium{% if selected_status %}&status={{ selected_status }}{% endif %}" class="filter-chip {% if selected_difficulty == 'Medium' %}active{% endif %}">MEDIUM</a>
+                    <a href="?q={{ query }}&difficulty=Hard{% if selected_status %}&status={{ selected_status }}{% endif %}" class="filter-chip {% if selected_difficulty == 'Hard' %}active{% endif %}">HARD</a>
+                    <a href="?q={{ query }}&difficulty=Deep-Fried{% if selected_status %}&status={{ selected_status }}{% endif %}" class="filter-chip {% if selected_difficulty == 'Deep-Fried' %}active{% endif %}">DEEP-FRIED</a>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">STATUS:</span>
+                    <a href="?q={{ query }}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}" class="filter-chip {% if not selected_status %}active{% endif %}">ALL</a>
+                    <a href="?q={{ query }}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}&status=solved" class="filter-chip {% if selected_status == 'solved' %}active{% endif %}">SOLVED</a>
+                    <a href="?q={{ query }}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}&status=active" class="filter-chip {% if selected_status == 'active' %}active{% endif %}">ACTIVE</a>
+                </div>
+
+                <span class="tag-badge points">TOTAL TARGETS: {{ labs|length }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component Cards Inventory Grid -->
+    <main class="labs-grid">
+        {% for lab_item in labs %}
+        <a href="{% url 'labs:lab_interface' slug=lab_item.slug %}" class="lab-card-link">
+            <article class="ic-card lab-component-card {% if lab_item.id in user_solves %}solved-card{% endif %}">
+                <div class="ic-header">
+                    <div class="ic-label">
+                        <span class="ic-ref">IC-{{ lab_item.id|stringformat:"02d" }}</span>
+                        <span class="tag-badge category">{{ lab_item.category }}</span>
+                    </div>
+                    <div>
+                        <span class="tag-badge points">+{{ lab_item.points }} PTS</span>
+                        {% if lab_item.id in user_solves %}
+                            <span class="tag-badge solved"><span class="led-diode led-success"></span> SOLVED</span>
+                        {% else %}
+                            <span class="tag-badge unsolved"><span class="led-diode led-warning"></span> ACTIVE</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="lab-card-body">
+                    <h2 class="lab-card-title">{{ lab_item.title }}</h2>
+                    <p class="lab-card-desc">{{ lab_item.description }}</p>
+                </div>
+
+                <div class="ic-footer">
+                    <div class="arch-tags">
+                        {% for tag in lab_item.tags %}
+                            <span class="arch-tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    <span class="btn-primary" style="padding: 4px 10px; font-size: 11px;">OPEN BENCH ➔</span>
+                </div>
+            </article>
+        </a>
+        {% empty %}
+        <div style="grid-column: 1 / -1; padding: 48px; text-align: center; color: #8B949E; font-family: var(--font-mono);">
+            <p>No hardware targets found matching your query.</p>
+        </div>
+        {% endfor %}
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Preferences &amp; Settings — ChipsvsCrackerZ</title>
+    <link rel="stylesheet" href="{% static 'css/labs/lab_interface.css' %}">
+    <link rel="stylesheet" href="{% static 'css/settings/settings.css' %}">
+</head>
+<body>
+
+    <!-- Top Platform Navigation Bar -->
+    <header class="platform-navbar">
+        <div class="brand-section">
+            <a href="{% url 'home:home' %}" class="brand-logo">
+                <span class="brand-logo-chip">⚡ IC</span>
+                <span class="brand-logo-text">CHIPS<span>VS</span>CRACKERZ</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'home:home' %}">Dashboard</a></li>
+                <li><a href="{% url 'labs:lab_list' %}">Labs</a></li>
+                <li><a href="{% url 'profile:profile' %}">Profile</a></li>
+                <li><a href="{% url 'settings:settings' %}" class="active">Settings</a></li>
+            </ul>
+        </div>
+
+        <div class="user-profile-dock">
+            <button type="button" id="sfx-toggle-btn" class="sfx-toggle-btn active" title="Toggle mechanical audio cues">
+                <span>🔊</span> SFX: ON
+            </button>
+            <a href="{% url 'profile:profile' %}" class="user-badge">
+                <div class="user-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                <span>{{ request.user.username }}</span>
+                <span class="points-pill">★ {{ total_user_points }} PTS</span>
+            </a>
+            <form action="{% url 'home:logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">LOGOUT</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Sub-Header / Telemetry Strip -->
+    <section class="workbench-header">
+        <div class="workbench-title-group">
+            <span class="breadcrumb-tag">CONFIGURATION // HARDWARE PERIPHERALS</span>
+            <h1 class="lab-title">PREFERENCES FOR {{ request.user.username|upper }}</h1>
+            <span class="tag-badge category">EEPROM SECTOR 0x01</span>
+        </div>
+
+        <div class="workbench-telemetry-strip">
+            <div class="telemetry-item">
+                <span class="led-diode led-success led-pulse"></span>
+                <span>BUS: <span class="telemetry-val cyan">I2C / SPI ARMED</span></span>
+            </div>
+            <div class="telemetry-item">
+                <span>CONFIG: <span class="telemetry-val">PERSISTENT</span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Settings Main Container -->
+    <main class="settings-container">
+        
+        <article class="ic-card">
+            <div class="ic-header">
+                <div class="ic-label">
+                    <span class="ic-ref">CFG-01: SYSTEM-PREFS</span>
+                    <span>HARDWARE &amp; TELEMETRY CONFIGURATION</span>
+                    <span class="led-diode led-cyan"></span>
+                </div>
+                <div class="ic-tools">
+                    <span class="breadcrumb-tag">NON-VOLATILE RAM</span>
+                </div>
+            </div>
+
+            <div class="settings-card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="terminal-alert success">
+                            <span class="led-diode led-success"></span>
+                            <span>[EEPROM] {{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" class="settings-form">
+                    {% csrf_token %}
+
+                    <!-- High-Contrast Dark PCB Mode -->
+                    <div class="hardware-toggle-row">
+                        <div class="toggle-details">
+                            <div class="toggle-title-row">
+                                <span class="toggle-title">High-Contrast PCB Mode</span>
+                                <span class="toggle-chip">UI-RENDER</span>
+                            </div>
+                            <p class="toggle-subtext">Render high-contrast traces and silkscreen guides on virtual breadboards.</p>
+                        </div>
+                        <label class="switch" for="dark_mode">
+                            <input type="checkbox" id="dark_mode" name="dark_mode" {% if settings.dark_mode %}checked{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Email Telemetry Dispatches -->
+                    <div class="hardware-toggle-row">
+                        <div class="toggle-details">
+                            <div class="toggle-title-row">
+                                <span class="toggle-title">Email Telemetry Dispatches</span>
+                                <span class="toggle-chip">DISPATCH</span>
+                            </div>
+                            <p class="toggle-subtext">Receive periodic platform announcements, hardware challenge releases, and CVE advisories.</p>
+                        </div>
+                        <label class="switch" for="email_notifications">
+                            <input type="checkbox" id="email_notifications" name="email_notifications" {% if settings.email_notifications %}checked{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Mechanical Relay SFX Audio Feedback -->
+                    <div class="hardware-toggle-row">
+                        <div class="toggle-details">
+                            <div class="toggle-title-row">
+                                <span class="toggle-title">Tactile Mechanical SFX Audio Cues</span>
+                                <span class="toggle-chip">AUDIO-DAC</span>
+                            </div>
+                            <p class="toggle-subtext">Synthesize mechanical relay clicks and buzzer chimes upon payload injection and button toggles.</p>
+                        </div>
+                        <label class="switch" for="sfx_checkbox">
+                            <input type="checkbox" id="sfx_checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button type="submit" class="btn-primary">
+                            <span>WRITE CONFIGURATION TO EEPROM</span>
+                            <span>➔</span>
+                        </button>
+                        <a href="{% url 'home:home' %}" class="btn-secondary">BACK TO DASHBOARD</a>
+                    </div>
+                </form>
+            </div>
+        </article>
+
+    </main>
+
+    <script src="{% static 'js/home/home.js' %}"></script>
+    <script>
+        (function() {
+            const sfxCheckbox = document.getElementById('sfx_checkbox');
+            if (sfxCheckbox) {
+                const isEnabled = localStorage.getItem('sfx_enabled') !== 'false';
+                sfxCheckbox.checked = isEnabled;
+                sfxCheckbox.addEventListener('change', function() {
+                    localStorage.setItem('sfx_enabled', this.checked ? 'true' : 'false');
+                    const btn = document.getElementById('sfx-toggle-btn');
+                    if (btn) {
+                        btn.classList.toggle('active', this.checked);
+                        btn.innerHTML = this.checked ? '<span>🔊</span> SFX: ON' : '<span>🔇</span> SFX: OFF';
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

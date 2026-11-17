@@ -1,0 +1,151 @@
+/* ==========================================================================
+   ChipsvsCrackerZ - Settings Stylesheet
+   Design System: "Cyber-Diner / Industrial Circuit" Aesthetic
+   ========================================================================== */
+
+.settings-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settings-card-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.terminal-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.terminal-alert.success {
+  background: rgba(35, 209, 139, 0.1);
+  border: 1px solid var(--status-success);
+  color: #85e89d;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Industrial DIP-Switch / Cyber-Diner Hardware Switch Row */
+.hardware-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  transition: border-color 0.15s ease;
+}
+
+.hardware-toggle-row:hover {
+  border-color: rgba(255, 184, 0, 0.4);
+}
+
+.toggle-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggle-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.toggle-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #11151C;
+  color: var(--brand-gold);
+  border: 1px solid var(--border-subtle);
+}
+
+.toggle-subtext {
+  font-size: 12px;
+  color: #8B949E;
+  line-height: 1.4;
+}
+
+/* Circuit Breaker / Slide Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #21262D;
+  border: 1px solid var(--border-subtle);
+  transition: 0.25s;
+  border-radius: 4px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #484F58;
+  transition: 0.25s;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+input:checked + .slider {
+  background-color: rgba(255, 184, 0, 0.15);
+  border-color: var(--brand-gold);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+  background-color: var(--brand-gold);
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.6);
+}
+
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}

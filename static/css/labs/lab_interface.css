@@ -1,0 +1,1261 @@
+/* ==========================================================================
+   ChipsvsCrackerZ - Lab Interface Stylesheet
+   Design System: "Cyber-Diner / Industrial Circuit" Aesthetic
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Base / Board Tokens */
+  --bg-primary: #0D1117;
+  --bg-secondary: #161B22;
+  --bg-tertiary: #21262D;
+  --border-subtle: #30363D;
+  --border-active: #FFB800;
+
+  /* Brand & Accent Tokens */
+  --brand-gold: #FFB800;
+  --accent-copper: #E56B10;
+  --cyan-glow: #00E5FF;
+
+  /* Functional LED Tokens */
+  --status-success: #23D18B;
+  --status-error: #FF453A;
+  --status-warning: #FF9F0A;
+  --status-info: #0A84FF;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-code: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+/* ==========================================================================
+   Global Reset & Base Canvas
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle, #21262D 1.2px, transparent 1.2px),
+    linear-gradient(to right, rgba(48, 54, 61, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(48, 54, 61, 0.15) 1px, transparent 1px);
+  background-size: 16px 16px, 64px 64px, 64px 64px;
+  background-position: 0 0, 0 0, 0 0;
+  color: #C9D1D9;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Header & Top Navbar
+   ========================================================================== */
+.platform-navbar {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.5px;
+}
+
+.brand-logo-chip {
+  background: linear-gradient(135deg, #FFB800 0%, #E56B10 100%);
+  color: #0D1117;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.4);
+  letter-spacing: 1px;
+}
+
+.brand-logo-text {
+  color: #FFFFFF;
+}
+
+.brand-logo-text span {
+  color: var(--brand-gold);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #8B949E;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--brand-gold);
+}
+
+.user-profile-dock {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sfx-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: #8B949E;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sfx-toggle-btn:hover {
+  border-color: var(--brand-gold);
+  color: #FFFFFF;
+}
+
+.sfx-toggle-btn.active {
+  border-color: var(--cyan-glow);
+  color: var(--cyan-glow);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 12px 4px 6px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: border-color 0.15s ease;
+}
+
+.user-badge:hover {
+  border-color: var(--border-active);
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #30363D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-gold);
+  border: 1px solid var(--border-subtle);
+}
+
+.points-pill {
+  color: var(--brand-gold);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   Workbench Sub-Header / Telemetry Status Strip
+   ========================================================================== */
+.workbench-header {
+  background: #11151C;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.workbench-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.breadcrumb-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #8B949E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lab-title {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.3px;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tag-badge.category {
+  background: rgba(229, 107, 16, 0.15);
+  color: #FF9F0A;
+  border: 1px solid rgba(229, 107, 16, 0.4);
+}
+
+.tag-badge.points {
+  background: rgba(255, 184, 0, 0.15);
+  color: var(--brand-gold);
+  border: 1px solid rgba(255, 184, 0, 0.4);
+}
+
+.tag-badge.solved {
+  background: rgba(35, 209, 139, 0.15);
+  color: var(--status-success);
+  border: 1px solid rgba(35, 209, 139, 0.4);
+}
+
+.tag-badge.unsolved {
+  background: rgba(48, 54, 61, 0.5);
+  color: #8B949E;
+  border: 1px solid var(--border-subtle);
+}
+
+.workbench-telemetry-strip {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #8B949E;
+}
+
+.telemetry-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.telemetry-val {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.telemetry-val.cyan {
+  color: var(--cyan-glow);
+}
+
+/* ==========================================================================
+   LED Indicators (Functional Radial Gradient Diodes)
+   ========================================================================== */
+.led-diode {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.led-success {
+  background: radial-gradient(circle at 35% 35%, #9fffcf 0%, #23D18B 55%, #0d6d43 100%);
+  box-shadow: 0 0 6px #23D18B, 0 0 12px rgba(35, 209, 139, 0.4);
+}
+
+.led-error {
+  background: radial-gradient(circle at 35% 35%, #ff9893 0%, #FF453A 55%, #8c1e18 100%);
+  box-shadow: 0 0 6px #FF453A, 0 0 12px rgba(255, 69, 58, 0.4);
+}
+
+.led-warning {
+  background: radial-gradient(circle at 35% 35%, #ffe099 0%, #FF9F0A 55%, #8f5300 100%);
+  box-shadow: 0 0 6px #FF9F0A, 0 0 12px rgba(255, 159, 10, 0.4);
+}
+
+.led-info {
+  background: radial-gradient(circle at 35% 35%, #a6d5ff 0%, #0A84FF 55%, #004593 100%);
+  box-shadow: 0 0 6px #0A84FF, 0 0 12px rgba(10, 132, 255, 0.4);
+}
+
+.led-cyan {
+  background: radial-gradient(circle at 35% 35%, #b3f8ff 0%, #00E5FF 55%, #007080 100%);
+  box-shadow: 0 0 6px #00E5FF, 0 0 12px rgba(0, 229, 255, 0.4);
+}
+
+.led-pulse {
+  animation: ledPulse 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes ledPulse {
+  0% { opacity: 0.6; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ==========================================================================
+   Action Buttons (Design System Spec)
+   ========================================================================== */
+.btn-primary {
+  background-color: var(--brand-gold);
+  color: #0D1117;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 18px;
+  border: 1px solid var(--brand-gold);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-primary:hover {
+  background-color: #FFC526;
+  box-shadow: 0 0 12px rgba(255, 184, 0, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.btn-secondary:hover {
+  border-color: var(--brand-gold);
+  color: #FFC526;
+  background: rgba(255, 184, 0, 0.05);
+}
+
+.btn-danger {
+  background: rgba(255, 69, 58, 0.15);
+  color: #FF453A;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 14px;
+  border: 1px solid var(--status-error);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.btn-danger:hover {
+  background: var(--status-error);
+  color: #0D1117;
+  box-shadow: 0 0 10px rgba(255, 69, 58, 0.4);
+}
+
+/* ==========================================================================
+   Main Workbench Layout (Split Architecture)
+   ========================================================================== */
+.workbench-container {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+  padding: 16px 24px 24px;
+  flex: 1;
+  max-width: 1800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .workbench-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   Component Card / IC Package Framing
+   ========================================================================== */
+.ic-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.ic-card.solved-card {
+  border-color: rgba(35, 209, 139, 0.5);
+  box-shadow: 0 0 16px rgba(35, 209, 139, 0.1);
+}
+
+/* IC Corner Silk-Screen Markings */
+.ic-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20px;
+  width: 32px;
+  height: 3px;
+  background: var(--border-subtle);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.ic-header {
+  background: #12161E;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ic-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
+}
+
+.ic-ref {
+  color: var(--brand-gold);
+  font-size: 11px;
+}
+
+.ic-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ic-footer {
+  background: #12161E;
+  border-top: 1px solid var(--border-subtle);
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #8B949E;
+}
+
+.arch-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.arch-tag {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: #C9D1D9;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+/* ==========================================================================
+   Left Panel Top Pane: Wokwi Virtual Hardware Canvas
+   ========================================================================== */
+.wokwi-pane {
+  min-height: 420px;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wokwi-canvas-container {
+  flex: 1;
+  position: relative;
+  background: #0B0E14;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.wokwi-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #0B0E14;
+}
+
+/* Fallback Hardware Canvas */
+.hardware-canvas-fallback {
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: radial-gradient(circle at center, #131A24 0%, #090C11 100%);
+}
+
+.circuit-board {
+  width: 100%;
+  max-width: 580px;
+  background: #0F1C18;
+  border: 2px solid #28543A;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(40, 84, 58, 0.2);
+  position: relative;
+}
+
+.circuit-traces {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(90deg, rgba(35, 209, 139, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(35, 209, 139, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.board-mcu-package {
+  background: #181B20;
+  border: 2px solid #30363D;
+  border-radius: 4px;
+  padding: 16px;
+  margin: 0 auto;
+  width: 320px;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+}
+
+.board-mcu-notch {
+  width: 20px;
+  height: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: #0F1C18;
+  margin: -16px auto 12px;
+  border: 1px solid #30363D;
+}
+
+.board-mcu-silkscreen {
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+.board-mcu-silkscreen .model {
+  font-size: 14px;
+  font-weight: 800;
+  color: #E6EDF3;
+  letter-spacing: 1px;
+}
+
+.board-mcu-silkscreen .sub {
+  font-size: 10px;
+  color: #8B949E;
+  margin-top: 2px;
+}
+
+.board-pins-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 6px 0;
+  border-top: 1px dashed #30363D;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.pin-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pin-indicator.active {
+  color: var(--cyan-glow);
+}
+
+.board-leds-bar {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.board-led-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #8B949E;
+}
+
+.hardware-canvas-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   Left Panel Bottom Pane: Firmware Editor / Serial Terminal
+   ========================================================================== */
+.editor-terminal-pane {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pane-tab-bar {
+  display: flex;
+  background: #0E1218;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 12px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #8B949E;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  color: #FFFFFF;
+}
+
+.tab-btn.active {
+  color: var(--brand-gold);
+  border-bottom-color: var(--brand-gold);
+  background: rgba(255, 184, 0, 0.05);
+}
+
+.tab-content {
+  display: none;
+  flex: 1;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Firmware Code View */
+.code-viewer-container {
+  flex: 1;
+  background: #0B0E14;
+  overflow: auto;
+  max-height: 380px;
+  padding: 12px;
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 1.6;
+  position: relative;
+}
+
+.code-viewer-container pre {
+  margin: 0;
+  color: #E6EDF3;
+}
+
+.code-line-numbers {
+  color: #484F58;
+  user-select: none;
+  margin-right: 16px;
+  display: inline-block;
+  text-align: right;
+}
+
+/* Serial Log / UART Terminal */
+.serial-terminal-container {
+  flex: 1;
+  background: #06090E;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+  font-family: var(--font-code);
+}
+
+.terminal-header {
+  background: #0E1218;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 6px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.terminal-telemetry-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #8B949E;
+}
+
+.baud-selector {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--cyan-glow);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.terminal-screen {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #00E5FF;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.terminal-log-line {
+  margin-bottom: 3px;
+}
+
+.terminal-log-line.boot {
+  color: #79C0FF;
+}
+
+.terminal-log-line.warn {
+  color: var(--status-warning);
+}
+
+.terminal-log-line.err {
+  color: var(--status-error);
+}
+
+.terminal-log-line.success {
+  color: var(--status-success);
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: var(--cyan-glow);
+  vertical-align: text-bottom;
+  animation: blinkCursor 1s step-end infinite;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.terminal-input-bar {
+  background: #0E1218;
+  border-top: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-prompt {
+  color: var(--brand-gold);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   Right Panel: Challenge Control
+   ========================================================================== */
+.challenge-control-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.control-tab-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 520px;
+}
+
+.scenario-title {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.scenario-description {
+  color: #C9D1D9;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.objective-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--brand-gold);
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.objective-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-gold);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.objective-list {
+  list-style: none;
+}
+
+.objective-list li {
+  font-size: 13px;
+  color: #E6EDF3;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.objective-list li::before {
+  content: "▸";
+  color: var(--brand-gold);
+}
+
+.artifacts-section {
+  margin-top: 16px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #8B949E;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.artifact-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.artifact-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.artifact-btn:hover {
+  border-color: var(--brand-gold);
+  color: var(--brand-gold);
+}
+
+/* ==========================================================================
+   Datasheet & Timing Diagram Tab
+   ========================================================================== */
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.specs-table th,
+.specs-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid var(--border-subtle);
+}
+
+.specs-table th {
+  background: #11151C;
+  color: var(--brand-gold);
+}
+
+.specs-table td {
+  background: var(--bg-secondary);
+}
+
+.waveform-card {
+  background: #090C10;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.waveform-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan-glow);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.waveform-svg {
+  width: 100%;
+  height: 120px;
+  display: block;
+}
+
+/* ==========================================================================
+   Hints Tab (Progressive Disclosure)
+   ========================================================================== */
+.hints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hint-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+
+.hint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.hint-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.hint-cost {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #FF9F0A;
+}
+
+.hint-body {
+  font-size: 13px;
+  color: #C9D1D9;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Flag Submission Panel (Hardware Payload Injector)
+   ========================================================================== */
+.flag-submission-panel {
+  background: #0F131A;
+  border-top: 2px solid var(--border-subtle);
+  padding: 16px 20px;
+  position: relative;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.flag-panel-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #8B949E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.flag-input-container {
+  display: flex;
+  align-items: center;
+  background: #0B0E14;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 0 12px;
+  font-family: var(--font-code);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flag-input-container:focus-within {
+  border-color: var(--brand-gold);
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.25);
+}
+
+.flag-prefix,
+.flag-suffix {
+  color: var(--brand-gold);
+  font-weight: 700;
+  user-select: none;
+}
+
+.flag-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-family: var(--font-code);
+  font-size: 15px;
+  padding: 12px 6px;
+  letter-spacing: 0.5px;
+}
+
+.flag-input::placeholder {
+  color: #484F58;
+}
+
+.flag-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submission-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #8B949E;
+}
+
+/* Micro-Interaction Animations */
+.border-pulse {
+  animation: borderPulse 1.2s ease-in-out;
+}
+
+@keyframes borderPulse {
+  0% { border-color: var(--border-subtle); }
+  50% { border-color: var(--cyan-glow); box-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
+  100% { border-color: var(--border-subtle); }
+}
+
+.shake-animation {
+  animation: horizontalShake 0.45s ease-in-out;
+}
+
+@keyframes horizontalShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.flash-success {
+  animation: flashSuccessBorder 1.5s ease-in-out;
+}
+
+@keyframes flashSuccessBorder {
+  0% { border-color: var(--border-subtle); }
+  30%, 70% { border-color: var(--status-success); box-shadow: 0 0 20px rgba(35, 209, 139, 0.6); }
+  100% { border-color: rgba(35, 209, 139, 0.5); }
+}
+
+.flash-error {
+  animation: flashErrorBorder 1.2s ease-in-out;
+}
+
+@keyframes flashErrorBorder {
+  0% { border-color: var(--border-subtle); }
+  30%, 70% { border-color: var(--status-error); box-shadow: 0 0 20px rgba(255, 69, 58, 0.6); }
+  100% { border-color: var(--border-subtle); }
+}
+
+/* Floating PTS Overlay */
+.pts-overlay {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--brand-gold);
+  text-shadow: 0 0 10px rgba(255, 184, 0, 0.6);
+  pointer-events: none;
+  animation: ptsFloat 2s ease-out forwards;
+}
+
+@keyframes ptsFloat {
+  0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+  30% { opacity: 1; transform: translateY(-5px) scale(1.1); }
+  80% { opacity: 1; transform: translateY(-15px) scale(1); }
+  100% { opacity: 0; transform: translateY(-30px); }
+}
+
+/* ==========================================================================
+   Notification Messages Bar
+   ========================================================================== */
+.alert-strip {
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.alert-strip.alert-success {
+  background: rgba(35, 209, 139, 0.15);
+  border: 1px solid var(--status-success);
+  color: #23D18B;
+}
+
+.alert-strip.alert-error {
+  background: rgba(255, 69, 58, 0.15);
+  border: 1px solid var(--status-error);
+  color: #FF453A;
+}
+
+.alert-strip.alert-info {
+  background: rgba(10, 132, 255, 0.15);
+  border: 1px solid var(--status-info);
+  color: #0A84FF;
+}

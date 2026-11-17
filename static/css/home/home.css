@@ -1,0 +1,402 @@
+/* ==========================================================================
+   ChipsvsCrackerZ - Dashboard (Home) Stylesheet
+   Design System: "Cyber-Diner / Industrial Circuit" Aesthetic
+   ========================================================================== */
+
+/* Main Dashboard Canvas */
+.dashboard-content {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   Operator Metrics Strip (4 Stat Chips)
+   ========================================================================== */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.metric-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-gold);
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 16px;
+  width: 24px;
+  height: 2px;
+  background: var(--brand-gold);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #8B949E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-ref {
+  color: var(--brand-gold);
+  font-weight: 700;
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.metric-value.gold {
+  color: var(--brand-gold);
+  text-shadow: 0 0 12px rgba(255, 184, 0, 0.3);
+}
+
+.metric-value.cyan {
+  color: var(--cyan-glow);
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.metric-value.green {
+  color: var(--status-success);
+  text-shadow: 0 0 12px rgba(35, 209, 139, 0.3);
+}
+
+.metric-sub {
+  font-size: 11px;
+  color: #8B949E;
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Two-Column Main Workbench Area
+   ========================================================================== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-left, .dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ==========================================================================
+   Silicon Architecture Badges Grid
+   ========================================================================== */
+.badges-container {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.silicon-badge-item {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.silicon-badge-item.unlocked {
+  border-color: rgba(35, 209, 139, 0.4);
+  background: rgba(35, 209, 139, 0.05);
+}
+
+.silicon-badge-item.unlocked:hover {
+  border-color: var(--status-success);
+  box-shadow: 0 0 12px rgba(35, 209, 139, 0.2);
+}
+
+.silicon-badge-item.locked {
+  opacity: 0.65;
+}
+
+.badge-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-chip-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #11151C;
+  color: var(--brand-gold);
+  border: 1px solid var(--border-subtle);
+}
+
+.badge-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.badge-desc {
+  font-size: 11px;
+  color: #8B949E;
+  line-height: 1.4;
+}
+
+.badge-status-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-status-tag.unlocked {
+  color: var(--status-success);
+}
+
+.badge-status-tag.locked {
+  color: #8B949E;
+}
+
+/* ==========================================================================
+   PCB Heatmap Matrix
+   ========================================================================== */
+.heatmap-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+.heatmap-scroll-area {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.heatmap-matrix {
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background: #161B22;
+  border: 1px solid rgba(48, 54, 61, 0.4);
+  transition: all 0.15s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.25);
+  z-index: 10;
+  border-color: #FFFFFF;
+}
+
+.heatmap-cell.level-0 {
+  background: #161B22;
+}
+
+.heatmap-cell.level-1 {
+  background: #0e4429;
+  border-color: #134e35;
+}
+
+.heatmap-cell.level-2 {
+  background: #006d32;
+  border-color: #238636;
+}
+
+.heatmap-cell.level-3 {
+  background: var(--brand-gold);
+  border-color: #FFC526;
+  box-shadow: 0 0 6px rgba(255, 184, 0, 0.6);
+}
+
+.heatmap-cell.is-today {
+  outline: 1px solid var(--cyan-glow);
+}
+
+.heatmap-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #8B949E;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-box {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   Recommended Targets Section
+   ========================================================================== */
+.targets-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.target-item {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.target-item:hover {
+  border-color: var(--brand-gold);
+  transform: translateX(4px);
+  background: rgba(255, 184, 0, 0.04);
+}
+
+.target-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.target-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.target-title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.target-desc {
+  font-size: 12px;
+  color: #8B949E;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Recent Telemetry Feed / Console
+   ========================================================================== */
+.telemetry-feed {
+  background: #0B0E14;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 0 0 6px 6px;
+}
+
+.telemetry-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.telemetry-ts {
+  color: #6E7681;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.telemetry-msg {
+  color: #C9D1D9;
+}
+
+.telemetry-msg.success {
+  color: var(--status-success);
+}
+
+.telemetry-msg.error {
+  color: var(--status-error);
+}
+
+.blinking-cursor {
+  display: inline-block;
+  color: var(--brand-gold);
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}

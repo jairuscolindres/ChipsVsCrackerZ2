@@ -1,0 +1,308 @@
+/* ==========================================================================
+   ChipsvsCrackerZ - Profile Stylesheet
+   Design System: "Cyber-Diner / Industrial Circuit" Aesthetic
+   ========================================================================== */
+
+.profile-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Left Card: Operator Identity IC Package
+   ========================================================================== */
+.operator-identity-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.avatar-chip-frame {
+  width: 100px;
+  height: 100px;
+  background: #11151C;
+  border: 2px solid var(--brand-gold);
+  border-radius: 8px;
+  padding: 4px;
+  position: relative;
+  box-shadow: 0 0 16px rgba(255, 184, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Simulated IC Corner Pins */
+.avatar-chip-frame::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 20px;
+  width: 60px;
+  height: 2px;
+  background: var(--border-subtle);
+}
+
+.avatar-chip-frame::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 20px;
+  width: 60px;
+  height: 2px;
+  background: var(--border-subtle);
+}
+
+.avatar-chip-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-tertiary);
+  color: var(--brand-gold);
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.operator-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.operator-callsign {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.operator-fullname {
+  font-size: 13px;
+  color: #8B949E;
+}
+
+.operator-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: rgba(255, 184, 0, 0.1);
+  border: 1px solid rgba(255, 184, 0, 0.4);
+  color: var(--brand-gold);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.operator-bio {
+  font-size: 13px;
+  color: #C9D1D9;
+  line-height: 1.5;
+  background: #0B0E14;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.operator-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.op-stat-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.op-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #8B949E;
+  text-transform: uppercase;
+}
+
+.op-stat-val {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.op-stat-val.gold {
+  color: var(--brand-gold);
+}
+
+.solved-targets-section {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.solved-targets-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #8B949E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.solved-target-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.solved-target-item a {
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.solved-target-item a:hover {
+  color: var(--brand-gold);
+}
+
+/* ==========================================================================
+   Right Card: Operator Configuration Form
+   ========================================================================== */
+.profile-form-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.terminal-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.terminal-alert.success {
+  background: rgba(35, 209, 139, 0.1);
+  border: 1px solid var(--status-success);
+  color: #85e89d;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #8B949E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.terminal-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.terminal-input-wrap:focus-within {
+  border-color: var(--border-active);
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.25);
+}
+
+.terminal-prompt-prefix {
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-gold);
+  background: #1A1F27;
+  padding: 10px 12px;
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.terminal-input-wrap input,
+.terminal-input-wrap textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 10px 14px;
+  color: #FFFFFF;
+  font-family: var(--font-code);
+  font-size: 13px;
+  resize: vertical;
+}
+
+.terminal-input-wrap input[type="file"] {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #8B949E;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}

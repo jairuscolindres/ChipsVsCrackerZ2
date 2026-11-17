@@ -94,3 +94,7 @@ coverage.xml
 # PyCharm
 *.iml
 .idea/
+
+# Local sensitive / pass files
+.env
+pass/

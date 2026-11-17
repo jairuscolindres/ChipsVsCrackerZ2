@@ -1,12 +1,296 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Home</title>
-    </head>
-    <body>
-        <h1>Welcome, {{ user.username }}!</h1>
-        <p>This is a placeholder home page.</p>
-        <a href="{% url 'login:login' %}">Logout</a>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Dashboard — ChipsvsCrackerZ</title>
+    <link rel="stylesheet" href="{% static 'css/labs/lab_interface.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+</head>
+<body>
+
+    <!-- Top Platform Navigation Bar -->
+    <header class="platform-navbar">
+        <div class="brand-section">
+            <a href="{% url 'home:home' %}" class="brand-logo">
+                <span class="brand-logo-chip">⚡ IC</span>
+                <span class="brand-logo-text">CHIPS<span>VS</span>CRACKERZ</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'home:home' %}" class="active">Dashboard</a></li>
+                <li><a href="{% url 'labs:lab_list' %}">Labs</a></li>
+                <li><a href="{% url 'profile:profile' %}">Profile</a></li>
+                <li><a href="{% url 'settings:settings' %}">Settings</a></li>
+            </ul>
+        </div>
+
+        <div class="user-profile-dock">
+            <button type="button" id="sfx-toggle-btn" class="sfx-toggle-btn active" title="Toggle mechanical audio cues">
+                <span>🔊</span> SFX: ON
+            </button>
+            <a href="{% url 'profile:profile' %}" class="user-badge">
+                <div class="user-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                <span>{{ request.user.username }}</span>
+                <span class="points-pill">★ {{ total_user_points }} PTS</span>
+            </a>
+            <form action="{% url 'home:logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">LOGOUT</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Sub-Header / Telemetry Strip -->
+    <section class="workbench-header">
+        <div class="workbench-title-group">
+            <span class="breadcrumb-tag">BENCH TELEMETRY // MISSION CONTROL</span>
+            <h1 class="lab-title">OPERATOR: {{ request.user.username|upper }}</h1>
+            <span class="tag-badge points">★ {{ total_user_points }} PTS</span>
+            <span class="tag-badge category">GLOBAL RANK: #{{ global_rank }}</span>
+        </div>
+
+        <div class="workbench-telemetry-strip">
+            <div class="telemetry-item">
+                <span class="led-diode led-success led-pulse"></span>
+                <span>STATUS: <span class="telemetry-val cyan">ARMED / ONLINE</span></span>
+            </div>
+            <div class="telemetry-item">
+                <span>MCU: <span class="telemetry-val">ESP32-S3</span></span>
+            </div>
+            <div class="telemetry-item">
+                <span>BAUD: <span class="telemetry-val cyan">115200</span></span>
+            </div>
+            <div class="telemetry-item">
+                <span>VOLTAGE: <span class="telemetry-val">3.3V DC</span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dashboard Body -->
+    <main class="dashboard-content">
+        
+        <!-- Player Statistics Overview Strip -->
+        <section class="metrics-strip">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>RANK POSITION</span>
+                    <span class="metric-ref">M01: LEADERBOARD</span>
+                </div>
+                <div class="metric-value cyan">#{{ global_rank }}</div>
+                <div class="metric-sub">Platform standings across active operators</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>TOTAL POINTS</span>
+                    <span class="metric-ref">M02: SCORE-PULSE</span>
+                </div>
+                <div class="metric-value gold">{{ total_user_points }} <span style="font-size: 14px;">PTS</span></div>
+                <div class="metric-sub">Deep-Fried bounty earned on bench</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>TARGETS PWNED</span>
+                    <span class="metric-ref">M03: SILICON-SOLVES</span>
+                </div>
+                <div class="metric-value green">{{ solved_count }} <span style="font-size: 14px; color: #8B949E;">/ {{ total_labs }}</span></div>
+                <div class="metric-sub">Hardware challenge circuits reversed</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>PAYLOAD ACCURACY</span>
+                    <span class="metric-ref">M04: INJECT-METRIC</span>
+                </div>
+                <div class="metric-value">{{ accuracy }}%</div>
+                <div class="metric-sub">Flag verification CRC success rate</div>
+            </div>
+        </section>
+
+        <!-- Two-Column Workbench Layout -->
+        <div class="dashboard-grid">
+            
+            <!-- Left Column: Activity Heatmap & Recommended Targets -->
+            <div class="dashboard-left">
+                
+                <!-- PCB Daily Solve Activity Heatmap -->
+                <article class="ic-card">
+                    <div class="ic-header">
+                        <div class="ic-label">
+                            <span class="ic-ref">U0: PCB-MATRIX</span>
+                            <span>PCB DAILY SOLVE ACTIVITY HEATMAP</span>
+                            <span class="led-diode led-success"></span>
+                        </div>
+                        <div class="ic-tools">
+                            <span class="tag-badge points">{{ solved_count }} TOTAL SOLVES</span>
+                        </div>
+                    </div>
+
+                    <div class="heatmap-card-body">
+                        <div class="heatmap-scroll-area">
+                            <div class="heatmap-matrix">
+                                {% for week in heatmap_weeks %}
+                                    <div class="heatmap-week">
+                                        {% for day in week %}
+                                            <div class="heatmap-cell level-{{ day.level }} {% if day.is_today %}is-today{% endif %}"
+                                                 title="{{ day.date }}: {{ day.count }} solve{{ day.count|pluralize }}">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="heatmap-footer">
+                            <span>Telemetry cadence: Past 16 weeks daily firmware activity</span>
+                            <div class="heatmap-legend">
+                                <span style="margin-right: 4px;">Less</span>
+                                <div class="legend-box" style="background: #161B22; border: 1px solid #30363D;"></div>
+                                <div class="legend-box" style="background: #0e4429;"></div>
+                                <div class="legend-box" style="background: #006d32;"></div>
+                                <div class="legend-box" style="background: var(--brand-gold);"></div>
+                                <span style="margin-left: 4px;">More</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Recommended Target Challenges -->
+                <article class="ic-card">
+                    <div class="ic-header">
+                        <div class="ic-label">
+                            <span class="ic-ref">U-REC: TARGETS</span>
+                            <span>RECOMMENDED HARDWARE TARGETS</span>
+                            <span class="led-diode led-warning led-pulse"></span>
+                        </div>
+                        <div class="ic-tools">
+                            <a href="{% url 'labs:lab_list' %}" class="btn-secondary" style="font-size: 11px;">VIEW ALL LABS ➔</a>
+                        </div>
+                    </div>
+
+                    <div class="targets-list">
+                        {% for lab in recommended_labs %}
+                            <a href="{% url 'labs:lab_interface' slug=lab.slug %}" class="target-item">
+                                <div class="target-info">
+                                    <div class="target-badges-row">
+                                        <span class="tag-badge category">{{ lab.category }}</span>
+                                        <span class="tag-badge points">+{{ lab.points }} PTS</span>
+                                        {% if lab.id in user_solve_lab_ids %}
+                                            <span class="tag-badge solved"><span class="led-diode led-success"></span> SOLVED</span>
+                                        {% else %}
+                                            <span class="tag-badge unsolved"><span class="led-diode led-warning"></span> ACTIVE</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="target-title">{{ lab.title }}</div>
+                                    <div class="target-desc">{{ lab.description|default:"Industrial firmware exploit target mounted on virtual test bench." }}</div>
+                                </div>
+                                <div>
+                                    <span class="btn-primary" style="padding: 6px 14px; font-size: 11px; white-space: nowrap;">
+                                        MOUNT ➔
+                                    </span>
+                                </div>
+                            </a>
+                        {% empty %}
+                            <div style="padding: 24px; text-align: center; color: #8B949E; font-family: var(--font-mono);">
+                                No target challenges currently mounted. Check back soon!
+                            </div>
+                        {% endfor %}
+                    </div>
+                </article>
+
+            </div>
+
+            <!-- <!-- Right Column: Architecture Badges & Telemetry Feed --> -->
+            <!-- <div class="dashboard-right"> -->
+            <!---->
+            <!--     <!-- Silicon Architecture Badges --> -->
+            <!--     <article class="ic-card"> -->
+            <!--         <div class="ic-header"> -->
+            <!--             <div class="ic-label"> -->
+            <!--                 <span class="ic-ref">U0: ARCH-BADGES</span> -->
+            <!--                 <span>SILICON ARCHITECTURE BADGES</span> -->
+            <!--                 <span class="led-diode led-cyan"></span> -->
+            <!--             </div> -->
+            <!--             <div class="ic-tools"> -->
+            <!--                 <span class="breadcrumb-tag">SKILL MATRIX</span> -->
+            <!--             </div> -->
+            <!--         </div> -->
+            <!---->
+            <!--         <div class="badges-container"> -->
+            <!--             {% for badge in badges %} -->
+            <!--                 <div class="silicon-badge-item {% if badge.unlocked %}unlocked{% else %}locked{% endif %}"> -->
+            <!--                     <div class="badge-top"> -->
+            <!--                         <span class="badge-chip-tag">{{ badge.tag }}</span> -->
+            <!--                         {% if badge.unlocked %} -->
+            <!--                             <span class="led-diode led-success" title="Badge Unlocked"></span> -->
+            <!--                         {% else %} -->
+            <!--                             <span class="led-diode led-warning" title="Badge Armed / Locked"></span> -->
+            <!--                         {% endif %} -->
+            <!--                     </div> -->
+            <!--                     <div class="badge-name">{{ badge.name }}</div> -->
+                                <div class="badge-desc">{{ badge.desc }}</div>
+                                <div class="badge-status-tag {% if badge.unlocked %}unlocked{% else %}locked{% endif %}">
+                                    {% if badge.unlocked %}
+                                        <span>✔ VERIFIED UNLOCKED</span>
+                                    {% else %}
+                                        <span>🔒 TARGET LOCKED</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </article>
+
+                <!-- Real-Time Telemetry Feed / Console -->
+                <article class="ic-card">
+                    <div class="ic-header">
+                        <div class="ic-label">
+                            <span class="ic-ref">UART0: /dev/ttyUSB0</span>
+                            <span>SERIAL TELEMETRY FEED</span>
+                            <span class="led-diode led-success led-pulse"></span>
+                        </div>
+                        <div class="ic-tools">
+                            <span class="breadcrumb-tag">115200 8N1</span>
+                        </div>
+                    </div>
+
+                    <div class="telemetry-feed">
+                        <div class="telemetry-row">
+                            <span class="telemetry-ts">[SYS]</span>
+                            <span class="telemetry-msg">Operator session initialized for {{ request.user.username }}. Terminal armed.</span>
+                        </div>
+                        {% for sub in recent_submissions %}
+                            <div class="telemetry-row">
+                                <span class="telemetry-ts">[{{ sub.created_at|date:"H:i:s" }}]</span>
+                                <span class="telemetry-msg {% if sub.is_correct %}success{% else %}error{% endif %}">
+                                    {% if sub.is_correct %}
+                                        [VERIFIED] Target '{{ sub.lab.title }}' flag injected (+{{ sub.lab.points }} PTS).
+                                    {% else %}
+                                        [REJECTED] Target '{{ sub.lab.title }}' invalid payload checksum.
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% empty %}
+                            <div class="telemetry-row">
+                                <span class="telemetry-ts">[LOG]</span>
+                                <span class="telemetry-msg">No submissions recorded yet. Mount a target from the Labs library to begin.</span>
+                            </div>
+                        {% endfor %}
+                        <div class="telemetry-row">
+                            <span class="telemetry-ts">[UART0]</span>
+                            <span class="telemetry-msg">&gt; Listening for serial probe signals... <span class="blinking-cursor">▋</span></span>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="{% static 'js/home/home.js' %}"></script>
+</body>
 </html>

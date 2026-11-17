@@ -6,3 +6,5 @@ app_name = "login"
 urlpatterns = [
         path("", login_view, name="login"),
         ]
+
+

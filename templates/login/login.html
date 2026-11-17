@@ -1,22 +1,89 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Login</title>
-        <link rel="stylesheet" href="{% static 'css/login/login.css' %}">
-    </head>
-    <body>
-        <h1>Login</h1>
-        {% if error %}
-            <p>{{ error }}</p>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-        <a href="{% url 'register:register' %}">Create an account</a>
-        <script src="{% static 'js/login/login.js' %}"></script>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Authentication — ChipsvsCrackerZ</title>
+    <link rel="stylesheet" href="{% static 'css/login/login.css' %}">
+</head>
+<body>
+
+    <main class="auth-wrapper">
+        <!-- Top Branding Banner -->
+        <header class="auth-branding">
+            <a href="{% url 'login:login' %}" class="brand-badge">
+                <span class="brand-chip">⚡ IC</span>
+                <span class="brand-title">CHIPS<span>VS</span>CRACKERZ</span>
+            </a>
+            <p class="auth-subtext">Deep-Fried Electronics // Virtual Hardware Workbench</p>
+        </header>
+
+        <!-- IC Package Terminal Card -->
+        <article class="auth-card">
+            <div class="auth-card-header">
+                <div class="auth-card-label">
+                    <span class="auth-ref-tag">U0: GATEWAY</span>
+                    <span>AUTH_TERMINAL_V2</span>
+                </div>
+                <div class="auth-status-pill">
+                    <span class="led-diode led-success led-pulse"></span>
+                    <span>ARMED</span>
+                </div>
+            </div>
+
+            <div class="auth-card-body">
+                <div class="auth-console-prompt">
+                    <span class="sys-prefix">[UART0]</span> Serial telemetry bus online at 115200 8N1.<br>
+                    Submit operator credentials to gain shell access to the hardware workbench.
+                </div>
+
+                {% if error %}
+                    <div class="auth-error-box">
+                        <span class="led-diode led-error"></span>
+                        <span>[FAULT] {{ error }}</span>
+                    </div>
+                {% endif %}
+
+                <form method="post" class="auth-form">
+                    {% csrf_token %}
+                    
+                    <div class="field-group">
+                        <label class="field-label" for="username">Operator Callsign</label>
+                        <div class="terminal-input-wrap">
+                            <span class="terminal-prompt-prefix">user@crackerz:~$</span>
+                            <input type="text" id="username" name="username" placeholder="callsign" autocomplete="username" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label" for="password">Security Key</label>
+                        <div class="terminal-input-wrap">
+                            <span class="terminal-prompt-prefix">auth@crackerz:~$</span>
+                            <input type="password" id="password" name="password" placeholder="••••••••••••" autocomplete="current-password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <span>AUTHENTICATE &amp; MOUNT BENCH</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+
+                <div class="auth-switch">
+                    <span>Unregistered hardware hacker?</span>
+                    <a href="{% url 'register:register' %}">Provision Operator Callsign ➔</a>
+                </div>
+            </div>
+
+            <footer class="auth-card-footer">
+                <div class="footer-item">PORT: <span>/dev/ttyUSB0</span></div>
+                <div class="footer-item">BAUD: <span>115200</span></div>
+                <div class="footer-item">CRYPTO: <span>AES-XTS</span></div>
+            </footer>
+        </article>
+    </main>
+
+    <script src="{% static 'js/login/login.js' %}"></script>
+</body>
 </html>
