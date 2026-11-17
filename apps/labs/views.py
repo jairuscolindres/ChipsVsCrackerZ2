@@ -1,7 +1,9 @@
+import hashlib
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models
+from django.utils.text import slugify
 from labs.models import Lab, Flag, Submission, Solve
 
 
@@ -321,3 +323,73 @@ def lab_interface_view(request, slug):
     }
 
     return render(request, 'labs/lab_interface.html', context)
+
+
+@login_required
+def challenge_editor_view(request):
+    """
+    Challenge Authoring Studio / Lab Editor.
+    Enables lab authors to design, wire, and configure new hardware CTF challenges.
+    """
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        category = request.POST.get('category', 'Hardware Interfacing').strip()
+        try:
+            points = int(request.POST.get('points', 100) or 100)
+        except ValueError:
+            points = 100
+        wokwi_url = request.POST.get('wokwi_url', '').strip()
+        description = request.POST.get('description', '').strip()
+        flag_val = request.POST.get('flag', '').strip()
+        is_published = request.POST.get('is_published') == 'on'
+
+        if not title:
+            messages.error(request, 'Challenge title cannot be empty.')
+        elif not wokwi_url:
+            messages.error(request, 'Wokwi project URL is required.')
+        elif not flag_val:
+            messages.error(request, 'Verification flag secret is required.')
+        else:
+            base_slug = slugify(title)
+            slug = base_slug or 'hardware-lab'
+            counter = 1
+            while Lab.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            lab = Lab.objects.create(
+                author=request.user,
+                title=title,
+                slug=slug,
+                description=description,
+                category=category,
+                points=points,
+                wokwi_url=wokwi_url,
+                is_published=is_published,
+            )
+
+            # Store flag (store sha256 hash or raw)
+            Flag.objects.create(
+                lab=lab,
+                flag_hash=flag_val,
+                is_case_sensitive=True,
+            )
+
+            messages.success(request, f'Challenge "{title}" successfully synthesized and mounted to inventory.')
+            return redirect('labs:lab_interface', slug=lab.slug)
+
+    authored_labs = Lab.objects.filter(author=request.user).order_by('-created_at')
+    all_labs_count = Lab.objects.count()
+
+    total_user_points = 0
+    if request.user.is_authenticated:
+        total_user_points = Solve.objects.filter(player=request.user).aggregate(
+            total=models.Sum('points_awarded')
+        )['total'] or 0
+
+    return render(request, 'labs/challenge_editor.html', {
+        'authored_labs': authored_labs,
+        'all_labs_count': all_labs_count,
+        'total_user_points': total_user_points,
+    })
+

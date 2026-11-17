@@ -1,0 +1,311 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Challenge Editor — ChipsvsCrackerZ</title>
+    <link rel="stylesheet" href="{% static 'css/labs/lab_interface.css' %}">
+    <link rel="stylesheet" href="{% static 'css/labs/challenge_editor.css' %}">
+</head>
+<body>
+
+    <!-- Top Platform Navigation Bar -->
+    <header class="platform-navbar">
+        <div class="brand-section">
+            <a href="{% url 'home:home' %}" class="brand-logo">
+                <span class="brand-logo-chip">⚡ IC</span>
+                <span class="brand-logo-text">CHIPS<span>VS</span>CRACKERZ</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'home:home' %}">Dashboard</a></li>
+                <li><a href="{% url 'labs:lab_list' %}">Labs</a></li>
+                <li><a href="{% url 'home:leaderboard' %}">Leaderboard</a></li>
+                <li><a href="{% url 'labs:challenge_editor' %}" class="active">Editor</a></li>
+                <li><a href="{% url 'profile:profile' %}">Profile</a></li>
+                <li><a href="{% url 'settings:settings' %}">Settings</a></li>
+            </ul>
+        </div>
+
+        <div class="user-profile-dock">
+            <button type="button" id="sfx-toggle-btn" class="sfx-toggle-btn active" title="Toggle mechanical audio cues">
+                <span>🔊</span> SFX: ON
+            </button>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'profile:profile' %}" class="user-badge">
+                    <div class="user-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                    <span>{{ request.user.username }}</span>
+                    <span class="points-pill">★ {{ total_user_points }} PTS</span>
+                </a>
+                <form action="{% url 'home:logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">LOGOUT</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login:login' %}" class="btn-secondary">Login</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Sub-Header / Telemetry Strip -->
+    <section class="workbench-header">
+        <div class="workbench-title-group">
+            <span class="breadcrumb-tag">AUTHORING STUDIO // SILICON LAB SYNTHESIZER</span>
+            <h1 class="lab-title">HARDWARE CHALLENGE EDITOR</h1>
+            <span class="tag-badge category">AUTHOR: {{ request.user.username|upper }}</span>
+            <span class="tag-badge points">TOTAL LABS: {{ all_labs_count }}</span>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'labs:lab_list' %}" class="btn-secondary">
+                <span>📋</span> VIEW INVENTORY
+            </a>
+        </div>
+    </section>
+
+    <!-- Notification Messages -->
+    {% if messages %}
+    <div class="messages-container" style="max-width: 1500px; margin: 12px auto 0; padding: 0 24px;">
+        {% for message in messages %}
+        <div class="alert-box alert-{{ message.tags }}" style="padding: 12px 16px; border-radius: 4px; font-family: var(--font-mono); font-size: 13px; margin-bottom: 8px; background: {% if message.tags == 'error' %}rgba(255, 69, 58, 0.15); border: 1px solid var(--status-error); color: #FF453A;{% else %}rgba(35, 209, 139, 0.15); border: 1px solid var(--status-success); color: #23D18B;{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Editor Studio Workspace -->
+    <main class="editor-workspace">
+        
+        <!-- Left Column: Challenge Form Specification -->
+        <section class="editor-pane form-pane">
+            <div class="pane-header">
+                <span class="pane-title"><span class="led-diode led-gold"></span> 01 // CHALLENGE SPECIFICATION</span>
+                <span class="pane-meta">CONFIG REGISTERS</span>
+            </div>
+
+            <form method="post" class="author-form" id="challenge-form">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="form-group flex-2">
+                        <label for="id_title">CHALLENGE TITLE <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">&gt;</span>
+                            <input type="text" id="id_title" name="title" required placeholder="e.g. I2C EEPROM Telemetry Dump" class="cyber-input" value="I2C EEPROM Telemetry Dump">
+                        </div>
+                    </div>
+
+                    <div class="form-group flex-1">
+                        <label for="id_category">CTF CATEGORY</label>
+                        <select id="id_category" name="category" class="cyber-select">
+                            <option value="Hardware Interfacing" selected>Hardware Interfacing (UART/I2C/SPI)</option>
+                            <option value="Circuit Analysis">Combinational Logic & Circuits</option>
+                            <option value="ICS & SCADA">Industrial Control Systems (ICS)</option>
+                            <option value="Cryptographic Hardware">Cryptographic Protocols & PRNG</option>
+                            <option value="Firmware Exploitation">Firmware Reverse Engineering</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="id_architecture">TARGET SILICON ARCHITECTURE</label>
+                        <select id="id_architecture" name="architecture" class="cyber-select">
+                            <option value="ESP32-S3" selected>ESP32-S3 (Xtensa Dual-Core 240MHz)</option>
+                            <option value="ATmega328P">AVR ATmega328P (8-bit 16MHz)</option>
+                            <option value="RP2040">Raspberry Pi RP2040 (Dual ARM M0+)</option>
+                            <option value="STM32F4">ARM Cortex-M4 (STM32 84MHz)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group flex-1">
+                        <label for="id_points">POINT VALUE (DIFFICULTY)</label>
+                        <div class="input-wrap">
+                            <span class="input-prefix">★</span>
+                            <input type="number" id="id_points" name="points" min="50" max="1000" step="50" value="250" class="cyber-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_wokwi_url">WOKWI SIMULATION URL <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-prefix">⚡</span>
+                        <input type="url" id="id_wokwi_url" name="wokwi_url" required placeholder="https://wokwi.com/projects/..." class="cyber-input" value="https://wokwi.com/projects/375218941235128321">
+                    </div>
+                    <span class="field-hint">Public Wokwi project link embedding virtual hardware canvas and wiring schematic.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_flag">VERIFICATION FLAG SECRET <span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-prefix">🔑</span>
+                        <input type="text" id="id_flag" name="flag" required placeholder="FLAG{...}" class="cyber-input" value="FLAG{I2C_BUS_SN1FF3D_EEPR0M_DUMP}">
+                    </div>
+                    <span class="field-hint">Stored safely as cryptographic hash. Never exposed to player browser or client bundle.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">MISSION BRIEFING & SCENARIO <span class="req">*</span></label>
+                    <textarea id="id_description" name="description" rows="5" class="cyber-textarea" required placeholder="Describe the physical hardware setup, victim controller, and exploit objective...">A simulated 24LC256 I2C EEPROM holds device authentication keys. An ESP32 reads the telemetry register over GPIO 21 (SDA) and GPIO 22 (SCL). Connect a virtual Logic Analyzer probe to decode the bus traffic and recover the encrypted key.</textarea>
+                </div>
+
+                <div class="form-row align-center">
+                    <label class="toggle-control">
+                        <input type="checkbox" name="is_published" checked>
+                        <span class="toggle-indicator"></span>
+                        <span class="toggle-label">PUBLISH TO LIVE INVENTORY IMMEDIATELY</span>
+                    </label>
+
+                    <button type="submit" class="btn-primary btn-submit-challenge">
+                        <span>⚡</span> SYNTHESIZE & DEPLOY CHALLENGE
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Right Column: Interactive Code & Wiring Preview -->
+        <section class="editor-pane preview-pane">
+            <div class="pane-header">
+                <span class="pane-title"><span class="led-diode led-cyan"></span> 02 // FIRMWARE & SCHEMATIC BLUEPRINT</span>
+                <div class="blueprint-tabs">
+                    <button type="button" class="tab-btn active" onclick="switchBlueprintTab('code')">sketch.ino</button>
+                    <button type="button" class="tab-btn" onclick="switchBlueprintTab('diagram')">diagram.json</button>
+                    <button type="button" class="tab-btn" onclick="switchBlueprintTab('triggers')">Triggers</button>
+                </div>
+            </div>
+
+            <!-- Firmware Sketch Tab -->
+            <div id="tab-code" class="tab-panel active">
+                <div class="code-box-header">
+                    <span class="code-tag">TARGET: ESP32-S3 // ARDUINO C++</span>
+                    <span class="code-tag">BAUD: 115200</span>
+                </div>
+                <pre class="blueprint-code"><code>#include &lt;Wire.h&gt;
+
+#define EEPROM_ADDR 0x50
+#define SDA_PIN     21
+#define SCL_PIN     22
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(SDA_PIN, SCL_PIN);
+  delay(1000);
+  
+  Serial.println("[BOOT] Initializing Hardware Security Token...");
+  dump_secure_telemetry();
+}
+
+void dump_secure_telemetry() {
+  Wire.beginTransmission(EEPROM_ADDR);
+  Wire.write(0x00); // Memory address offset
+  Wire.write(0x10);
+  Wire.endTransmission();
+  
+  Wire.requestFrom(EEPROM_ADDR, 32);
+  Serial.print("[I2C] Transmitting encrypted calibration payload...");
+  while (Wire.available()) {
+    char c = Wire.read();
+  }
+  Serial.println(" [DONE]");
+}
+
+void loop() {
+  // Periodic telemetry heartbeat
+  delay(5000);
+  dump_secure_telemetry();
+}</code></pre>
+            </div>
+
+            <!-- Circuit Diagram Tab -->
+            <div id="tab-diagram" class="tab-panel">
+                <div class="code-box-header">
+                    <span class="code-tag">WIRING SCHEMATIC // WOKWI FORMAT</span>
+                    <span class="code-tag">PARTS: 4 NODES</span>
+                </div>
+                <pre class="blueprint-code"><code>{
+  "version": 1,
+  "author": "ChipsvsCrackerZ Lab Synthesis",
+  "parts": [
+    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0 },
+    { "type": "wokwi-logic-analyzer", "id": "logic", "top": -120, "left": 180 },
+    { "type": "wokwi-resistor", "id": "r1", "top": 80, "left": 140, "attrs": { "value": "4700" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 120, "left": 140, "attrs": { "value": "4700" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:21", "logic:D0", "green", [ "h0" ] ],
+    [ "esp:22", "logic:D1", "blue", [ "h0" ] ],
+    [ "esp:GND.1", "logic:GND", "black", [ "h0" ] ]
+  ]
+}</code></pre>
+            </div>
+
+            <!-- Hardware Triggers Tab -->
+            <div id="tab-triggers" class="tab-panel">
+                <div class="trigger-matrix">
+                    <div class="trigger-card">
+                        <span class="trigger-icon">📡</span>
+                        <div class="trigger-info">
+                            <span class="trigger-title">Protocol Bus Decoding</span>
+                            <span class="trigger-desc">Flag revealed when Logic Analyzer records 100kHz I2C frames on D0/D1.</span>
+                        </div>
+                        <span class="tag-badge solved">READY</span>
+                    </div>
+
+                    <div class="trigger-card">
+                        <span class="trigger-icon">🛡️</span>
+                        <div class="trigger-info">
+                            <span class="trigger-title">Anti-Tamper Monitor</span>
+                            <span class="trigger-desc">Zeroizes keys if GPIO 0 (BOOT strap) is pulled LOW during operation.</span>
+                        </div>
+                        <span class="tag-badge points">ACTIVE</span>
+                    </div>
+
+                    <div class="trigger-card">
+                        <span class="trigger-icon">⚡</span>
+                        <div class="trigger-info">
+                            <span class="trigger-title">UART Baudrate Lock</span>
+                            <span class="trigger-desc">Diagnostic banner streaming at 115200 8N1 serial telemetry.</span>
+                        </div>
+                        <span class="tag-badge solved">READY</span>
+                    </div>
+                </div>
+
+                {% if authored_labs %}
+                <div class="authored-list-wrap">
+                    <span class="authored-header">YOUR AUTHORED CHALLENGES ({{ authored_labs|length }})</span>
+                    <ul class="authored-labs-list">
+                        {% for alab in authored_labs %}
+                        <li>
+                            <a href="{% url 'labs:lab_interface' slug=alab.slug %}" class="authored-lab-item">
+                                <span class="authored-title">{{ alab.title }}</span>
+                                <span class="tag-badge points">+{{ alab.points }} PTS</span>
+                                <span class="tag-badge category">{{ alab.category }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Tab Switching Script -->
+    <script>
+        function switchBlueprintTab(tabId) {
+            document.querySelectorAll('.blueprint-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+            event.target.classList.add('active');
+            const targetPanel = document.getElementById('tab-' + tabId);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
