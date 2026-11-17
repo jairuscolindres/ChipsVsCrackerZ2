@@ -98,3 +98,10 @@ coverage.xml
 # Local sensitive / pass files
 .env
 pass/
+
+# Progress monitoring evidence
+*_FINAL_PROJECT/
+*.patch
+GIT_*.txt
+BASELINE_COMMIT.txt
+
