@@ -154,3 +154,72 @@ def logout_view(request):
         return redirect('login:login')
     logout(request)
     return redirect('login:login')
+
+
+def leaderboard_view(request):
+    """
+    Global Leaderboard / Grid Operators Scoreboard.
+    Aggregates points, solve counts, accuracy, and podium ranks for all operators.
+    """
+    users = User.objects.all().select_related('profile')
+
+    leaderboard_data = []
+    for u in users:
+        solves = Solve.objects.filter(player=u).select_related('lab')
+        points = solves.aggregate(total=Sum('points_awarded'))['total'] or 0
+        solve_count = solves.count()
+        last_solve = solves.order_by('-created_at').first()
+
+        total_sub = Submission.objects.filter(player=u).count()
+        correct_sub = Submission.objects.filter(player=u, is_correct=True).count()
+        accuracy = round((correct_sub / total_sub) * 100) if total_sub > 0 else (100 if solve_count > 0 else 0)
+
+        role = 'OPERATOR'
+        if hasattr(u, 'profile') and u.profile:
+            role = u.profile.role.upper() if u.profile.role else 'OPERATOR'
+
+        leaderboard_data.append({
+            'user': u,
+            'username': u.username,
+            'full_name': getattr(u, 'profile', None).full_name if hasattr(u, 'profile') and u.profile else '',
+            'role': role,
+            'points': points,
+            'solve_count': solve_count,
+            'accuracy': accuracy,
+            'last_solve': last_solve.created_at if last_solve else None,
+            'is_current_user': request.user.is_authenticated and request.user == u,
+        })
+
+    # Sort primarily by points descending, then by solve count descending
+    leaderboard_data.sort(key=lambda x: (x['points'], x['solve_count']), reverse=True)
+
+    for idx, entry in enumerate(leaderboard_data, 1):
+        entry['rank'] = idx
+
+    top_three = leaderboard_data[:3]
+    other_rankings = leaderboard_data[3:]
+
+    # Platform telemetry metrics
+    total_operators = users.count()
+    total_solves = Solve.objects.count()
+    total_submissions = Submission.objects.count()
+    total_points_distributed = Solve.objects.aggregate(total=Sum('points_awarded'))['total'] or 0
+    active_challenges = Lab.objects.filter(is_published=True).count()
+
+    total_user_points = 0
+    if request.user.is_authenticated:
+        total_user_points = Solve.objects.filter(player=request.user).aggregate(total=Sum('points_awarded'))['total'] or 0
+
+    context = {
+        'leaderboard_data': leaderboard_data,
+        'top_three': top_three,
+        'other_rankings': other_rankings,
+        'total_operators': total_operators,
+        'total_solves': total_solves,
+        'total_submissions': total_submissions,
+        'total_points_distributed': total_points_distributed,
+        'active_challenges': active_challenges,
+        'total_user_points': total_user_points,
+    }
+    return render(request, 'home/leaderboard.html', context)
+
