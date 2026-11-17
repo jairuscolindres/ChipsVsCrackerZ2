@@ -204,34 +204,34 @@
 
             </div>
 
-            <!-- <!-- Right Column: Architecture Badges & Telemetry Feed --> -->
-            <!-- <div class="dashboard-right"> -->
-            <!---->
-            <!--     <!-- Silicon Architecture Badges --> -->
-            <!--     <article class="ic-card"> -->
-            <!--         <div class="ic-header"> -->
-            <!--             <div class="ic-label"> -->
-            <!--                 <span class="ic-ref">U0: ARCH-BADGES</span> -->
-            <!--                 <span>SILICON ARCHITECTURE BADGES</span> -->
-            <!--                 <span class="led-diode led-cyan"></span> -->
-            <!--             </div> -->
-            <!--             <div class="ic-tools"> -->
-            <!--                 <span class="breadcrumb-tag">SKILL MATRIX</span> -->
-            <!--             </div> -->
-            <!--         </div> -->
-            <!---->
-            <!--         <div class="badges-container"> -->
-            <!--             {% for badge in badges %} -->
-            <!--                 <div class="silicon-badge-item {% if badge.unlocked %}unlocked{% else %}locked{% endif %}"> -->
-            <!--                     <div class="badge-top"> -->
-            <!--                         <span class="badge-chip-tag">{{ badge.tag }}</span> -->
-            <!--                         {% if badge.unlocked %} -->
-            <!--                             <span class="led-diode led-success" title="Badge Unlocked"></span> -->
-            <!--                         {% else %} -->
-            <!--                             <span class="led-diode led-warning" title="Badge Armed / Locked"></span> -->
-            <!--                         {% endif %} -->
-            <!--                     </div> -->
-            <!--                     <div class="badge-name">{{ badge.name }}</div> -->
+            <!-- Right Column: Architecture Badges & Telemetry Feed -->
+            <div class="dashboard-right">
+
+                <!-- Silicon Architecture Badges -->
+                <article class="ic-card">
+                    <div class="ic-header">
+                        <div class="ic-label">
+                            <span class="ic-ref">U0: ARCH-BADGES</span>
+                            <span>SILICON ARCHITECTURE BADGES</span>
+                            <span class="led-diode led-cyan"></span>
+                        </div>
+                        <div class="ic-tools">
+                            <span class="breadcrumb-tag">SKILL MATRIX</span>
+                        </div>
+                    </div>
+
+                    <div class="badges-container">
+                        {% for badge in badges %}
+                            <div class="silicon-badge-item {% if badge.unlocked %}unlocked{% else %}locked{% endif %}">
+                                <div class="badge-top">
+                                    <span class="badge-chip-tag">{{ badge.tag }}</span>
+                                    {% if badge.unlocked %}
+                                        <span class="led-diode led-success" title="Badge Unlocked"></span>
+                                    {% else %}
+                                        <span class="led-diode led-warning" title="Badge Armed / Locked"></span>
+                                    {% endif %}
+                                </div>
+                                <div class="badge-name">{{ badge.name }}</div>
                                 <div class="badge-desc">{{ badge.desc }}</div>
                                 <div class="badge-status-tag {% if badge.unlocked %}unlocked{% else %}locked{% endif %}">
                                     {% if badge.unlocked %}
